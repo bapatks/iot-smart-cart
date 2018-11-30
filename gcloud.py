@@ -190,9 +190,9 @@ def publish(args, client, payload):
     # Wait if backoff is required.
     if should_backoff:
         # If backoff time is too large, give up.
-        if minimum_backoff_time > MAXIMUM_BACKOFF_TIME:
-            print('Exceeded maximum backoff time. Giving up.')
-            break
+        # if minimum_backoff_time > MAXIMUM_BACKOFF_TIME:
+        #     print('Exceeded maximum backoff time. Giving up.')
+        #     break
 
         # Otherwise, wait and connect again.
         delay = minimum_backoff_time + random.randint(0, 1000) / 1000.0

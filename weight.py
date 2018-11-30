@@ -29,14 +29,15 @@ def get_weight():
     GPIO.output(SCK,1)  #these two lines 
     GPIO.output(SCK,0)  #set DT back low
 
-    weight = (103/50)*(round(count/10000, 3)-1641)
+    weight = (1/9)*(round(count/1000, 3)-16416)
     #print(round(count/100))    # display final digital value
-    print(round(weight,3))
+    # print(round(weight,3))
     #print(count)
 
 def get():
     old_weight = get_weight()
     while(abs(old_weight-get_weight()) < 0.75):
+        pass
     new_weight = get_weight()
     return abs(new_weight-old_weight)
 

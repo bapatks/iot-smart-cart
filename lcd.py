@@ -113,6 +113,16 @@ def lcd_string(string): # an example call would be lcd_string('hello')
     for i in range(0, len(string)):
         lcd_char(string[i])
 
+def display_data(string):
+    lcd_clear_screen()
+    if(len(string)>16):
+        str1 = string[:16]
+        str2 = string[16:]
+        lcd_string(str1)
+        lcd_place_cursor(64) # place cursor at second line
+        lcd_string(str2)
+    else:
+        lcd_string(str1)
 # example code
 # lcd_init()
 # lcd_string('Smart Cart is')

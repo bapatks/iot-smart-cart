@@ -5,7 +5,7 @@ import os
 import time
 import settings
 import lcd, weight, button
-from threading import thread
+import threading, thread
 
 def parse_command_line_args():
     """Parse command line arguments."""
@@ -66,15 +66,15 @@ if __name__ == '__main__':
     args = parse_command_line_args()
     settings.init()
     lcd.lcd_init()
-    hx711.scale_init()
+    weight.scale_init()
     lcd.lcd_clear_screen()
     client = gcloud.setup_client(args)
     
-    while True:
+    while True: 
         client.loop()
         if settings.recvID == settings.cartID:
             print("Cart ID matched to that from cloud")
-            lcd.lcd_string("Hello "+settings.username+"!")
+            lcd.display_data("Hello "+settings.username+"!")
             ModeThread = Thread(name="poll_cart_mode", target=button.check_mode)
             ModeThread.start()
             checkoutThread = Thread(name="poll_cart_checkout", target=button.check_checkout)
@@ -87,21 +87,23 @@ if __name__ == '__main__':
 #     while settings.validateOTP == "T":
     while True:
         #barcode.get must wait until barcode has changed
-        barcode = barcode.get()
+        # barcode = barcode.get()
         lcd.display_data("Place the item in cart")
 
         #weight.get must wait until weight has changed
         weight = weight.get()
-        actual_weight = table.get(barcode)
-        if(abs(actual_weight - weight) < 0.5):
-            #display details of barcode
-            lcd.display_data(barcode)
-            payload = '{}:{}'.format(barcode, settings.insertion)
-            gcloud.publish(args, client, payload)
-        else:
-            lcd.display_data("call the manager for further assistance")
-            while True:
-                # lcd.display_data("call the manager for further assistance")
+        lcd.display_data("weight = "+str(weight))
+        # actual_weight = table.get(barcode)
+
+        # if(abs(actual_weight - weight) < 0.5):
+        #     #display details of barcode
+        #     lcd.display_data(barcode)
+        #     payload = '{}:{}'.format(barcode, settings.insertion)
+        #     gcloud.publish(args, client, payload)
+        # else:
+        #     lcd.display_data("call the manager for further assistance")
+        #     while True:
+        #         # lcd.display_data("call the manager for further assistance")
                
     print("Finished app")
     

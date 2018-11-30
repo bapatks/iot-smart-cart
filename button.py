@@ -10,6 +10,7 @@ GPIO.setmode(GPIO.BOARD)
 def check_mode():
     while True:
         while GPIO.input(MODE) == 0:
+            pass
         if settings.insertion == 1:
             settings.insertion = -1;
         else:
@@ -17,4 +18,5 @@ def check_mode():
         
 def check_checkout():
     while GPIO.input(CHECKOUT) == 0:
+        pass
     settings.checkout = True;
