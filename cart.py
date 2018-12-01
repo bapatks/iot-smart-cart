@@ -67,43 +67,47 @@ if __name__ == '__main__':
     settings.init()
     lcd.lcd_init()
     weight.scale_init()
-    lcd.lcd_clear_screen()
     client = gcloud.setup_client(args)
     
     while True: 
         client.loop()
         if settings.recvID == settings.cartID:
-            print("Cart ID matched to that from cloud")
-            lcd.display_data("Hello "+settings.username+"!")
-            ModeThread = Thread(name="poll_cart_mode", target=button.check_mode)
-            ModeThread.start()
-            checkoutThread = Thread(name="poll_cart_checkout", target=button.check_checkout)
-            checkoutThread.start()
+    	    print("Cart ID matched to that from cloud")
+			lcd.lcd_clear_screen()
+			lcd_place_cursor(0)
+	    	lcd.lcd_string('Hello')
+	    	time.sleep(5)
+        #     lcd.display_data("Hello "+str(settings.username)+"!")
+			
+        #     ModeThread = Thread(name="poll_cart_mode", target=button.check_mode)
+        #     ModeThread.start()
+        #     checkoutThread = Thread(name="poll_cart_checkout", target=button.check_checkout)
+        #     checkoutThread.start()
             break;
         else:
             print("yo yo honey singh")
             time.sleep(1)
 
 #     while settings.validateOTP == "T":
-    while True:
-        #barcode.get must wait until barcode has changed
-        # barcode = barcode.get()
-        lcd.display_data("Place the item in cart")
+#     while True:
+#         #barcode.get must wait until barcode has changed
+#         # barcode = barcode.get()
+#         lcd.display_data("Place the item in cart")
 
-        #weight.get must wait until weight has changed
-        weight = weight.get()
-        lcd.display_data("weight = "+str(weight))
-        # actual_weight = table.get(barcode)
+#         #weight.get must wait until weight has changed
+#         weight = weight.get()
+#         lcd.display_data("weight = "+str(weight))
+#         # actual_weight = table.get(barcode)
 
-        # if(abs(actual_weight - weight) < 0.5):
-        #     #display details of barcode
-        #     lcd.display_data(barcode)
-        #     payload = '{}:{}'.format(barcode, settings.insertion)
-        #     gcloud.publish(args, client, payload)
-        # else:
-        #     lcd.display_data("call the manager for further assistance")
-        #     while True:
-        #         # lcd.display_data("call the manager for further assistance")
+#         # if(abs(actual_weight - weight) < 0.5):
+#         #     #display details of barcode
+#         #     lcd.display_data(barcode)
+#         #     payload = '{}:{}'.format(barcode, settings.insertion)
+#         #     gcloud.publish(args, client, payload)
+#         # else:
+#         #     lcd.display_data("call the manager for further assistance")
+#         #     while True:
+#         #         # lcd.display_data("call the manager for further assistance")
                
     print("Finished app")
     

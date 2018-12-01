@@ -1,8 +1,8 @@
 import RPi.GPIO as GPIO
 import time
 
-MODE = 1 # board pin 1
-CHECKOUT = 2 # board pin 2
+MODE = 12 # board pin 12
+CHECKOUT = 16 # board pin 16
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)

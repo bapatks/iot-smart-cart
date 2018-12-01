@@ -11,4 +11,5 @@ def init():
     cartID = "1000"
     insertion  = 1
     checkout = False
+    username = ""
     

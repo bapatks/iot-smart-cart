@@ -76,10 +76,11 @@ def lcd_init():
     lcd_command(6) # increment cursor to the right and don't shift screen
 
 def lcd_char(singleChar):   # an example call would be lcd_char('h')
+    time.sleep(.01) # sleep for 5ms
     singleChar = ord(singleChar)
 
     GPIO.output(RS,1) # set register select to 1
-    time.sleep(.005) # sleep for 5ms
+    time.sleep(.01) # sleep for 5ms
 
     GPIO.output(E,1) # set enable to 1
 
@@ -88,11 +89,11 @@ def lcd_char(singleChar):   # an example call would be lcd_char('h')
     GPIO.output(DB5, (singleChar>>5) & 1 ) # singleChar on the data bus
     GPIO.output(DB4, (singleChar>>4) & 1 ) #
 
-    time.sleep(.005) # sleep for 5ms
+    time.sleep(.01) # sleep for 5ms
 
     GPIO.output(E,0) # set enable to 0, latch the data
 
-    time.sleep(.005) # sleep for 5ms
+    time.sleep(.01) # sleep for 5ms
 
     GPIO.output(E,1) # set enable to 1
 
@@ -101,7 +102,7 @@ def lcd_char(singleChar):   # an example call would be lcd_char('h')
     GPIO.output(DB5, (singleChar>>1) & 1 ) # singleChar on the data bus
     GPIO.output(DB4, (singleChar>>0) & 1 ) #
 
-    time.sleep(.005) # sleep for 5ms
+    time.sleep(.01) # sleep for 5ms
 
     GPIO.output(E,0) # set enable to 0, latch the data
 
@@ -111,10 +112,12 @@ def lcd_string(string): # an example call would be lcd_string('hello')
                         # be mindfull of the amount of space left on the
                         # lcd screen's line and where the cursor is.
     for i in range(0, len(string)):
+        print(string[i])
         lcd_char(string[i])
 
 def display_data(string):
     lcd_clear_screen()
+    lcd_place_cursor(0)
     if(len(string)>16):
         str1 = string[:16]
         str2 = string[16:]
@@ -122,7 +125,7 @@ def display_data(string):
         lcd_place_cursor(64) # place cursor at second line
         lcd_string(str2)
     else:
-        lcd_string(str1)
+        lcd_string(string)
 # example code
 # lcd_init()
 # lcd_string('Smart Cart is')
