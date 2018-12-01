@@ -30,15 +30,18 @@ def get_weight():
     GPIO.output(SCK,0)  #set DT back low
 
     weight = (1/9)*(round(count/1000, 3)-16416)
+    #print("weight"+str(weight))
+    return round(weight,3)
     #print(round(count/100))    # display final digital value
     # print(round(weight,3))
     #print(count)
 
 def get():
     old_weight = get_weight()
+    #print("old_weight = "+str(old_weight))
     while(abs(old_weight-get_weight()) < 0.75):
+        time.sleep(2)
         pass
     new_weight = get_weight()
+    #print("new_weight = "+str(new_weight))
     return abs(new_weight-old_weight)
-
-

@@ -96,7 +96,6 @@ def on_connect(unused_client, unused_userdata, unused_flags, rc):
 
 def on_disconnect(unused_client, unused_userdata, rc):
     """Paho callback for when a device disconnects."""
-    print('fucked due to', rc)
     print('on_disconnect', error_str(rc))
 
     # Since a disconnect occurred, the next loop iteration will wait with
@@ -115,8 +114,8 @@ def on_message(unused_client, unused_userdata, message):
     payload = str(message.payload)
     params = payload.split(":")
     if len(params)>1:
-        settings.recvID = params[0]
-        settings.username = params[1]
+        settings.recvID = params[0][2:]
+        settings.username = params[1][:-2]
         print('for cartID={} , for clientID={}'.format(params[0], params[1]))
     print('Received message \'{}\' on topic \'{}\' with Qos {}'.format(
             payload, message.topic, str(message.qos)))
@@ -156,11 +155,11 @@ def get_client(
     client.connect(mqtt_bridge_hostname, mqtt_bridge_port)
 
     # This is the topic that the device will receive configuration updates on.
-    mqtt_config_topic = '/devices/{}/config'.format(device_id)
+    # mqtt_config_topic = '/devices/{}/config'.format(device_id)
     mqtt_commands_topic = '/devices/{}/commands/#'.format(device_id)
 
     # Subscribe to the config topic.
-    client.subscribe(mqtt_config_topic, qos=1)
+    # client.subscribe(mqtt_config_topic, qos=1)
     client.subscribe(mqtt_commands_topic, qos=1)
     return client
 # [END iot_mqtt_config]
