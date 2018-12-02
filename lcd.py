@@ -1,10 +1,10 @@
 import RPi.GPIO as GPIO
 import time
 
-DB4 = 3 # board pin 3
-DB5 = 5 # board pin 5
-DB6 = 7 # board pin 7
-DB7 = 11 # board pin 11
+DB4 = 11 # board pin 3
+DB5 = 37 # board pin 5
+DB6 = 5 # board pin 7
+DB7 = 3 # board pin 11
 RS = 13 # board pin 13
 E = 15 # board pin 15
 
@@ -112,7 +112,7 @@ def lcd_string(string): # an example call would be lcd_string('hello')
                         # lcd screen's line and where the cursor is.
     for i in range(0, len(string)):
         lcd_char(string[i])
-        time.sleep(0.1)
+        #time.sleep(0.1)
 
 def display(string):
     lcd_clear_screen()
@@ -124,9 +124,24 @@ def display(string):
         lcd_string(str2)
     else:
         lcd_string(string)
+#example call: write("hi", 0, 0, 1) # write "hi" to first cell of first line
+#               yes to clear screen
+def lcd_write(string, row, col, clear):
+    if clear == 1:
+        lcd_clear_screen()
+    if row == 0:
+        lcd_place_cursor(col)
+    elif row == 1:
+        lcd_place_cursor(col + 64)
+    lcd_string(string)
+
 
 # example code
 # lcd_init()
 # lcd_string('Smart Cart is')
 # lcd_place_cursor(64) # place cursor at second line
 # lcd_string('the greatest!')
+#lcd_init()
+#write("hello", 0, 0, 0)
+#time.sleep(2)
+#write("hi", 1, 0, 1)

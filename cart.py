@@ -6,8 +6,9 @@ import time
 import settings
 import weight, button, firebase
 from threading import Thread
-import RPi.GPIO as GPIO
-from RPLCD.gpio import CharLCD
+#import RPi.GPIO as GPIO
+#from RPLCD.gpio import CharLCD
+import lcd
 
 def parse_command_line_args():
     """Parse command line arguments."""
@@ -67,17 +68,20 @@ def parse_command_line_args():
 if __name__ == '__main__':
     args = parse_command_line_args()
     settings.init()
-    lcd = CharLCD(cols=16, rows=2, pin_rs=13, pin_e=15, pins_data=[3,5,7,11], numbering_mode=GPIO.BOARD)
+    lcd.lcd_init()
+    #lcd = CharLCD(cols=16, rows=2, pin_rs=13, pin_e=15, pins_data=[29,23,21,19,11,37,5,3], numbering_mode=GPIO.BOARD)
     weight.scale_init()
     client = gcloud.setup_client(args)
     #count = 0
-    
+    #print(str(weight.get()))
     while True:
         client.loop(1)
 
         if settings.recvID == settings.cartID:
             print("Cart ID matched to that from cloud")
-            
+            lcd.lcd_write("Hello "+str(settings.username), 0, 0, 0)
+            #lcd.display("Hello "+str(settings.username))
+            time.sleep(5)
             ModeThread = Thread(target=button.check_mode)
             ModeThread.start()
             checkoutThread = Thread(target=button.check_checkout)
@@ -85,39 +89,43 @@ if __name__ == '__main__':
             break;
         time.sleep(.1)
 
-    #lcd.display("Hello "+str(settings.username))
-    lcd.clear()
-    lcd.cursor_pos = (1,3)
-    time.sleep(.1)
-    lcd.write_string(u'Hello world')
-   
     while True:
         #barcode.get must wait until barcode has changed
 ##        barcode = barcode.get()
-        barcode = "926571"
-        # lcd.display("Place the item in cart")
+        barcode = "321456"
+        
+        lcd.lcd_write("Place an item", 0, 0, 1)
+        lcd.lcd_write("in cart", 1, 0, 0)
+        
 
         #weight.get must wait until weight has changed
         check_weight = weight.get()
-        # lcd.display("weight = "+str(weight))
+        
+        lcd.lcd_write("added weight = ", 0, 0, 1)
+        
+        lcd.lcd_write(str(check_weight), 1, 0, 0)
+        time.sleep(1)
+
         actual_weight = firebase.table_get_wt(barcode)
 
         if(abs(actual_weight - check_weight) < 0.5):
             print("Preparing to publish")
             # display details of barcode
-##            lcd.write_string(barcode)
-##            payload = '{}:{}'.format(barcode, settings.insertion)
-##            gcloud.publish(args, client, payload)
+            lcd.lcd_write(str(barcode),0,0,1)
+            client.loop(1)
+            payload = '{}:{}'.format(barcode, settings.insertion)
+            gcloud.publish(args, client, payload)
         else:
-            #lcd.display_data("call the manager for further assistance")
+            lcd.lcd_write("call the manager",0,0,1)
             print("Must not publish")
-            #while True:
-                #lcd.display_data("call the manager for further assistance")
+            while True:
+                time.sleep(1)
+                lcd.lcd_write("call the manager",0,0,1)
 
     while(settings.checkout == False):
     	pass
     checkoutThread.join()
     ModeThread.join()
-    client.disconnect()
+##    client.disconnect()
     print("Finished app")
     
