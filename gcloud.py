@@ -166,15 +166,6 @@ def get_client(
 
 
 def setup_client(args):
-    global minimum_backoff_time
-
-    # Publish to the events or state topic based on the flag.
-    sub_topic = 'events/info' if args.message_type == 'event' else 'state'
-
-    mqtt_topic = '/devices/{}/{}'.format(args.device_id, sub_topic)
-    
-    jwt_iat = datetime.datetime.utcnow()
-    jwt_exp_mins = args.jwt_expires_minutes
     return get_client(
         args.project_id, args.cloud_region, args.registry_id, args.device_id,
         args.private_key_file, args.algorithm, args.ca_certs,
@@ -182,7 +173,14 @@ def setup_client(args):
 
 def publish(args, client, payload):
     # Publish num_messages mesages to the MQTT bridge once per second.
-    for i in range(1,1):
+
+    # Publish to the events or state topic based on the flag.
+    global minimum_backoff_time
+    sub_topic = 'events/info' if args.message_type == 'event' else 'state'
+
+    mqtt_topic = '/devices/{}/{}'.format(args.device_id, sub_topic)
+    
+    for i in range(0,1):
         # Process network events.
         client.loop()
     
@@ -202,8 +200,12 @@ def publish(args, client, payload):
 
         # payload = '{}/{}-payload-{}'.format(
         #         args.registry_id, args.device_id, i)
-        # print('Publishing message {}/{}: \'{}\''.format(
+        #print('Publishing message {}/{}: \'{}\''.format(
         #         i, args.num_messages, payload))
+
+        jwt_iat = datetime.datetime.utcnow()
+        jwt_exp_mins = args.jwt_expires_minutes
+        
         # [START iot_mqtt_jwt_refresh]
         seconds_since_issue = (datetime.datetime.utcnow() - jwt_iat).seconds
         if seconds_since_issue > 60 * jwt_exp_mins:
@@ -223,5 +225,5 @@ def publish(args, client, payload):
 
         # Send events every second. State should not be updated as often
         time.sleep(1 if args.message_type == 'event' else 5)   
-    print('Finished.')
+    #print('Finished.')
 

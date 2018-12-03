@@ -1,14 +1,26 @@
-##import firebase_admin
-##from firebase_admin import credentials
+import firebase_admin, time
+from firebase_admin import credentials
+from firebase_admin import db
 
-##cred = credentials.Cert('path/to/serviceKey.json')
-##firebase_admin.initialize_app(cred, {
-##    'databaseURL' : 'https://my-db.firebaseio.com'
-##})
+cred = credentials.Certificate('/home/pi/Documents/cart/smartcart-365b7-firebase-adminsdk-z3den-79f18008bd.json')
+firebase_admin.initialize_app(cred, {'databaseURL' : 'https://smartcart-365b7.firebaseio.com/Items'})
+result=db.reference('/Items')
 
-def table_get_wt(barcode):
-    table = {"071187602011": ["Pinto Beans", 2.0, 5], "926571": ["Sugar", 1.0, 6]}
-    if barcode in table:
-        return table[barcode][1]
+def item_get_wt(barcode):
+    item_list = result.get()
+    if barcode in item_list:
+        return item_list[barcode]['Weight']
     else:
-        return 0
+        time.sleep(1)
+        lcd.lcd_write("Item not found", 0 ,0, 1)
+        return -1
+    
+def item_get_name(barcode):
+    item_list = result.get()
+    if barcode in item_list:
+        return item_list[barcode]['ItemName']
+    else:
+        time.sleep(1)
+        lcd.lcd_write("Item not found", 0 ,0, 1)
+        return "-1"
+

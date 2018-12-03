@@ -93,13 +93,17 @@ if __name__ == '__main__':
         
         #barcode.barcode_reader must wait until barcode a barcode is read
         barcode = reader.barcode_get()
-        #barcode = "321456"
-        lcd.lcd_write(str(barcode),0,0,1)
+
+        ItemName = firebase.item_get_name(barcode)
+        if(ItemName == "-1"):
+            continue
+        
+        lcd.lcd_write(ItemName,0,0,1)
+        time.sleep(3)
         
         lcd.lcd_write("Place an item", 0, 0, 1)
         lcd.lcd_write("in cart", 1, 0, 0)
         
-
         #weight.get must wait until weight has changed
         check_weight = weight.get()
         
@@ -108,8 +112,10 @@ if __name__ == '__main__':
         lcd.lcd_write(str(check_weight), 1, 0, 0)
         time.sleep(1)
 
-        actual_weight = firebase.table_get_wt(barcode)
-
+        actual_weight = firebase.item_get_wt(barcode)
+        if(actual_weight == -1):
+            continue
+        
         if(abs(actual_weight - check_weight) < 0.5):
             print("Preparing to publish")
             # display details of barcode
