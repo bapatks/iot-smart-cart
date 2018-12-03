@@ -46,3 +46,9 @@ def get():
     new_weight = get_weight()
     #print("new_weight = "+str(new_weight))
     return abs(new_weight-old_weight)
+
+
+##scale_init()
+##while True:
+##    check = get()
+##    print(check)

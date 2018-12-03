@@ -169,8 +169,7 @@ def setup_client(args):
     global minimum_backoff_time
 
     # Publish to the events or state topic based on the flag.
-    #sub_topic = 'events/info' if args.message_type == 'event' else 'state'
-    sub_topic = 'orange' if args.message_type == 'event' else 'state'
+    sub_topic = 'events/info' if args.message_type == 'event' else 'state'
 
     mqtt_topic = '/devices/{}/{}'.format(args.device_id, sub_topic)
     

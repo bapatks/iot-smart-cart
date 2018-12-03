@@ -7,7 +7,7 @@
 ##})
 
 def table_get_wt(barcode):
-    table = {"321456": ["Brown Rice", 2.0, 5], "926571": ["Sugar", 1.0, 6]}
+    table = {"071187602011": ["Pinto Beans", 2.0, 5], "926571": ["Sugar", 1.0, 6]}
     if barcode in table:
         return table[barcode][1]
     else:

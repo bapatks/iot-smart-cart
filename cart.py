@@ -4,10 +4,9 @@ import argparse
 import os
 import time
 import settings
-import weight, button, firebase
+import weight, button, firebase, reader
 from threading import Thread
-#import RPi.GPIO as GPIO
-#from RPLCD.gpio import CharLCD
+
 import lcd
 
 def parse_command_line_args():
@@ -90,9 +89,12 @@ if __name__ == '__main__':
         time.sleep(.1)
 
     while True:
-        #barcode.get must wait until barcode has changed
-##        barcode = barcode.get()
-        barcode = "321456"
+        lcd.lcd_write("Scan an item", 0, 2, 1)
+        
+        #barcode.barcode_reader must wait until barcode a barcode is read
+        barcode = reader.barcode_get()
+        #barcode = "321456"
+        lcd.lcd_write(str(barcode),0,0,1)
         
         lcd.lcd_write("Place an item", 0, 0, 1)
         lcd.lcd_write("in cart", 1, 0, 0)
@@ -111,7 +113,6 @@ if __name__ == '__main__':
         if(abs(actual_weight - check_weight) < 0.5):
             print("Preparing to publish")
             # display details of barcode
-            lcd.lcd_write(str(barcode),0,0,1)
             client.loop(1)
             payload = '{}:{}'.format(barcode, settings.insertion)
             gcloud.publish(args, client, payload)
