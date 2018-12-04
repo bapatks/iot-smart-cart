@@ -68,19 +68,17 @@ if __name__ == '__main__':
     args = parse_command_line_args()
     settings.init()
     lcd.lcd_init()
-    #lcd = CharLCD(cols=16, rows=2, pin_rs=13, pin_e=15, pins_data=[29,23,21,19,11,37,5,3], numbering_mode=GPIO.BOARD)
     weight.scale_init()
     client = gcloud.setup_client(args)
-    #count = 0
-    #print(str(weight.get()))
+    lcd.lcd_write("SmartCart", 0, 3, 0)
+    
     while True:
         client.loop(1)
 
         if settings.recvID == settings.cartID:
             print("Cart ID matched to that from cloud")
-            lcd.lcd_write("Hello "+str(settings.username), 0, 0, 0)
-            #lcd.display("Hello "+str(settings.username))
-            time.sleep(5)
+            lcd.lcd_write("Hello "+str(settings.username), 0, 0, 1)
+            time.sleep(1)
             ModeThread = Thread(target=button.check_mode)
             ModeThread.start()
             checkoutThread = Thread(target=button.check_checkout)
@@ -88,35 +86,48 @@ if __name__ == '__main__':
             break;
         time.sleep(.1)
 
+    TotalWeight = 0
+    
     while True:
+        if (abs(TotalWeight - weight.get_weight())>0.75):
+            print("Weight mismatch: cannot proceed"+str(weight.get_weight()))
+            continue
+
         lcd.lcd_write("Scan an item", 0, 2, 1)
         
-        #barcode.barcode_reader must wait until barcode a barcode is read
+        #barcode.barcode_reader must block until a barcode is read
         barcode = reader.barcode_get()
 
-        ItemName = firebase.item_get_name(barcode)
-        if(ItemName == "-1"):
+        item_details = firebase.item_get(barcode)
+        ItemName = item_details['ItemName']
+        ActualWeight = item_details['Weight']
+        
+        if(ItemName == "-1" or ActualWeight == -1):
             continue
         
         lcd.lcd_write(ItemName,0,0,1)
-        time.sleep(3)
-        
-        lcd.lcd_write("Place an item", 0, 0, 1)
-        lcd.lcd_write("in cart", 1, 0, 0)
-        
-        #weight.get must wait until weight has changed
-        check_weight = weight.get()
-        
-        lcd.lcd_write("added weight = ", 0, 0, 1)
+        time.sleep(1)
+
+        if settings.insertion == 1:
+            TotalWeight = TotalWeight + ActualWeight
+            lcd.lcd_write("Place the item", 0, 0, 1)
+            lcd.lcd_write("in cart", 1, 0, 0)
+            #weight.get must wait until weight has changed
+            check_weight = weight.get()
+            lcd.lcd_write("Added weight = ", 0, 3, 1)
+
+        elif settings.insertion == -1:
+            TotalWeight = TotalWeight - ActualWeight
+            lcd.lcd_write("Remove the item", 0, 0, 1)
+            lcd.lcd_write("from cart", 1, 0, 0)
+            #weight.get must wait until weight has changed
+            check_weight = weight.get()
+            lcd.lcd_write("Removed weight = ", 0, 0, 1)
         
         lcd.lcd_write(str(check_weight), 1, 0, 0)
         time.sleep(1)
-
-        actual_weight = firebase.item_get_wt(barcode)
-        if(actual_weight == -1):
-            continue
         
-        if(abs(actual_weight - check_weight) < 0.5):
+        if(abs(ActualWeight - check_weight) < 0.5):
             print("Preparing to publish")
             # display details of barcode
             client.loop(1)
@@ -128,6 +139,7 @@ if __name__ == '__main__':
             while True:
                 time.sleep(1)
                 lcd.lcd_write("call the manager",0,0,1)
+
 
     while(settings.checkout == False):
     	pass

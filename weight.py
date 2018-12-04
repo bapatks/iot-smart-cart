@@ -39,16 +39,16 @@ def get_weight():
 
 def get():
     old_weight = get_weight()
-    #print("old_weight = "+str(old_weight))
+    print("old_weight = "+str(old_weight))
     while((abs(old_weight-get_weight()) < 0.75) or (abs(old_weight-get_weight()) > 15)):
         time.sleep(2)
         pass
     new_weight = get_weight()
-    #print("new_weight = "+str(new_weight))
+    print("new_weight = "+str(new_weight))
     return abs(new_weight-old_weight)
 
 
 ##scale_init()
 ##while True:
-##    check = get()
+##    check = get_weight()
 ##    print(check)

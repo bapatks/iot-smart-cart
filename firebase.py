@@ -24,3 +24,12 @@ def item_get_name(barcode):
         lcd.lcd_write("Item not found", 0 ,0, 1)
         return "-1"
 
+
+def item_get(barcode):
+    item_list = result.get()
+    if barcode in item_list:
+        return item_list[barcode]
+    else:
+        time.sleep(1)
+        lcd.lcd_write("Item not found", 0 ,0, 1)
+        return "-1"
